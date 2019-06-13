@@ -18,12 +18,12 @@ ui <- fluidPage(
       tags$hr(),
       helpText("Discover MLB trends throughout the years."),
       selectInput("role", 
-                  label = "Choose the type of players to study:",
-                  choices = list("Batters", 
-                                 "Pitchers"),
-                  selected = "Batter"),
+                  label = "Choose the type of statistics to study:",
+                  choices = list("Batting", 
+                                 "Pitching"),
+                  selected = "Batting"),
       selectInput(
-        inputId =  "date", 
+        inputId =  "year", 
         label = "Choose a year to display trends from:", 
         choices = 1900:2100
       ),
@@ -39,7 +39,8 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-        "main"
+      plotOutput("plot",height = '450px',width = '550px'),
+      fluidRow(column(DT::dataTableOutput("table"),width = 12))
     )
   )
 )

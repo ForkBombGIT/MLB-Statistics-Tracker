@@ -75,10 +75,43 @@ input.to.tags <- hash(c("G (Games Played)",
 
 #retieves data from mlb website
 get.data <- function(input) {
+  #Convert url
   url <- mlb_url %>% gsub("YEAR",input$year,.) %>% gsub("ROLE",tolower(input$role),.)
+  hitting_stats <- list(".dg-g",
+                        ".dg-ab",
+                        ".dg-r",
+                        ".dg-h",
+                        ".dg-d",
+                        ".dg-t",
+                        ".dg-hr",
+                        ".dg-rbi",
+                        ".dg-bb",
+                        ".dg-so",
+                        ".dg-sb",
+                        ".dg-cs",
+                        ".dg-avg",
+                        ".dg-obp",
+                        ".dg-slg")
+ 
+  pitching_stats <- list(".dg-w",
+                         ".dg-l",
+                         ".dg-era",
+                         ".dg-g",
+                         ".dg-gs",
+                         ".dg-sv",
+                         ".dg-svo",
+                         ".dg-ip",
+                         ".dg-h",
+                         ".dg-r",
+                         ".dg-er",
+                         ".dg-hr",
+                         ".dg-bb",
+                         ".dg-so",
+                         ".dg-avg",
+                         ".dg-whip")
   
   # Start the Server
-  rD <- rsDriver(browser = "phantomjs")
+  rD <- rsDriver(browser = "firefox")
   remDr <- rD$client
   remDr$navigate(url)
   source <- read_html(remDr$getPageSource()[[1]])
@@ -91,9 +124,23 @@ get.data <- function(input) {
                   html_text() %>%  
                   gsub("[\r\n]","",.) %>%
                   factor()
-                 
+  
+  df <- data.frame("names" = player_names)
+  
+  #iterate through possible options, name the columns after the html class
+  list <- if (input$role == "Hitting") hitting_stats else pitching_stats
+  datalist <- list()
+  for (i in 1:length(list)) {
+    col <- source %>% 
+           html_nodes(list[[i]]) %>% 
+           html_text() %>%  
+           gsub("[\r\n]","",.)
     
-  data.frame(names = player_names)
+    col_name <- list[[i]]
+    datalist[[i]] <- data.frame(col_name = col)
+  }
+   
+  datalist         
 }
 
 # Define server logic 
@@ -138,11 +185,14 @@ server <- function(input, output,session) {
   
     #output role
     output$role <- renderText({
-        paste(input$role)
+        paste(input$role,get.data(input))
     })
     
+    #display graph comparing x and y variables
+    #x and y will be retrieved from the scraped data by indexing: df[["x"]] and df[["y"]]
+    #"x" and "y" hold the converted input values
     
     #renders the list of movies
-    output$table <- DT::renderDataTable(get.data(input), options = list(scrollX = TRUE))
+    #output$table <- DT::renderDataTable(get.data(input), options = list(scrollX = TRUE))
     
 }

@@ -60,22 +60,22 @@ hitting_stats <- list("td.dg-g",
                       "td.dg-slg",
                       "td.dg-ops")
 #pitching html classes
-pitching_stats <- list(".dg-w",
-                       ".dg-l",
-                       ".dg-era",
-                       ".dg-g",
-                       ".dg-gs",
-                       ".dg-sv",
-                       ".dg-svo",
-                       ".dg-ip",
-                       ".dg-h",
-                       ".dg-r",
-                       ".dg-er",
-                       ".dg-hr",
-                       ".dg-bb",
-                       ".dg-so",
-                       ".dg-avg",
-                       ".dg-whip")
+pitching_stats <- list("td.dg-w",
+                       "td.dg-l",
+                       "td.dg-era",
+                       "td.dg-g",
+                       "td.dg-gs",
+                       "td.dg-sv",
+                       "td.dg-svo",
+                       "td.dg-ip",
+                       "td.dg-h",
+                       "td.dg-r",
+                       "td.dg-er",
+                       "td.dg-hr",
+                       "td.dg-bb",
+                       "td.dg-so",
+                       "td.dg-avg",
+                       "td.dg-whip")
 
 #hash to convert input to html tags
 input_hash <- hash(c(hitting_choices,pitching_choices),
@@ -103,7 +103,7 @@ get.data <- function(input) {
   
   #iterate through possible options, name the columns after the html class
   df <- data.frame("names" = player_names)
-  list <- if (input$role == "Hitting") hitting_stats else pitching_stat
+  list <- if (input$role == "Hitting") hitting_stats else pitching_stats
   for (i in 1:length(list)) {
     col <- source %>% 
            html_nodes(list[[i]]) %>% 

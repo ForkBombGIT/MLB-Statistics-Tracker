@@ -25,7 +25,7 @@ ui <- fluidPage(
       selectInput(
         inputId =  "year", 
         label = "Choose a year to display trends from:", 
-        choices = 1900:2100
+        choices = 1876:2100
       ),
       selectInput(
           inputId =  "x", 
@@ -39,8 +39,9 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      #plotOutput("plot",height = '450px',width = '550px'),
-      fluidRow(column(DT::dataTableOutput("table"),width = 12))
+      plotOutput("plot",height = '450px',width = '550px'),
+      fluidRow(column(DT::dataTableOutput("table"),width = 12)),
+      textOutput("test")
     )
   )
 )

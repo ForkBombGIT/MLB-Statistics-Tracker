@@ -102,13 +102,16 @@ get.data <- function(input) {
                   factor()
   
   #iterate through possible options, name the columns after the html class
+  #add to dataframe
+  #initialize data frame with player names
   df <- data.frame("names" = player_names)
   list <- if (input$role == "Hitting") hitting_stats else pitching_stats
   for (i in 1:length(list)) {
     col <- source %>% 
            html_nodes(list[[i]]) %>% 
            html_text() %>%  
-           gsub("[\r\n]","",.)
+           gsub("[\r\n]","",.) %>%
+           as.numeric()
     
     df[gsub("td.dg-","",list[[i]])] <- col
   }
@@ -117,6 +120,12 @@ get.data <- function(input) {
 
 # Define server logic 
 server <- function(input, output,session) {
+    reactive_values <- reactiveValues(df_data = NULL)
+    
+    observeEvent(c(input$role,
+                  input$year
+    ), { reactive_values$df_data <- get.data(input)})
+    
     observe({
       updateSelectInput(session,"x",choices = if (input$role == "Hitting") hitting_choices else pitching_choices)
       updateSelectInput(session,"y",choices = if (input$role == "Hitting") hitting_choices else pitching_choices)
@@ -128,10 +137,14 @@ server <- function(input, output,session) {
     })
     
     #display graph comparing x and y variables
-    #x and y will be retrieved from the scraped data by indexing: df[["x"]] and df[["y"]]
-    #"x" and "y" hold the converted input values
+    output$plot <- renderPlot({ 
+      ggplot(reactive_values$df_data, aes_string(x=gsub("td.dg-","",input_hash[[input$x]]),y=gsub("td.dg-","",input_hash[[input$y]]))) + 
+        geom_point() +
+        ggtitle(paste(toString(input$x),"v", toString(input$y),"in the year", toString(input$date))) +
+        labs(x = toString(input$x), y = toString(input$y))
+    })
     
-    #renders the list of movies
-    output$table <- DT::renderDataTable(get.data(input), options = list(scrollX = TRUE))
+    #renders the list of players
+    output$table <- DT::renderDataTable(reactive_values$df_data, options = list(scrollX = TRUE))
     
 }

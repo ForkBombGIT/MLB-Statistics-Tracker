@@ -2,7 +2,6 @@ library(rvest)
 library(RSelenium)
 library(ggplot2)
 library(hash)
-library(plyr)
 
 #MLB Statistics Sheet
 mlb_url <- "http://mlb.mlb.com/stats/sortable.jsp#elem=%5Bobject+Object%5D&tab_level=child&click_text=Sortable+Player+ROLE&game_type='R'&season=YEAR&season_type=ANY&league_code='MLB'&sectionType=sp&statType=ROLE&page=1&ts=1560404713148"
@@ -135,6 +134,24 @@ server <- function(input, output,session) {
     output$role <- renderText({
         paste(input$role)
     })
+    
+    #renders mean of data
+    output$mean_x <- renderText({
+      paste(round(mean(reactive_values$df_data[[gsub("td.dg-","",input_hash[[input$x]])]],rm.na = TRUE),digits = 3))
+    })
+    
+    #renders mean of data
+    output$mean_y <- renderText({
+      paste(round(mean(reactive_values$df_data[[gsub("td.dg-","",input_hash[[input$y]])]],rm.na = TRUE),digits = 3))
+    })
+    
+    #renders mean of data
+    output$cc <- renderText({
+      paste(round(cor(reactive_values$df_data[[gsub("td.dg-","",input_hash[[input$x]])]],
+                      reactive_values$df_data[[gsub("td.dg-","",input_hash[[input$y]])]]),
+                  digits = 3))
+    })
+
     
     #display graph comparing x and y variables
     output$plot <- renderPlot({ 

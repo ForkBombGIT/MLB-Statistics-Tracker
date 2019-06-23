@@ -3,12 +3,19 @@ library(DT)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  tags$style(HTML("
-  h3 {
-    margin-top: 0px;
-    margin-bottom: 10px;
-  }
-  ")),
+  #html styles
+  tags$head(
+    tags$style(HTML("
+      h3 {
+        margin-top: 0px;
+        margin-bottom: 10px;
+      }
+      
+      dt { float: left; clear:both; margin-bottom: 5px; font-weight: normal;}
+      dd { float: right; }
+      dl { overflow: hidden; }
+    "))
+  ),
   # Application title
   titlePanel("MLB Statistics Tracker"),
   tags$hr(),
@@ -16,6 +23,14 @@ ui <- fluidPage(
     sidebarPanel(
       tags$h3(textOutput("role")),
       tags$hr(),
+      tags$dl(
+        tags$dt("Mean X:"),
+        tags$dd(textOutput("mean_x")),
+        tags$dt("Mean Y:"),
+        tags$dd(textOutput("mean_y")),
+        tags$dt("Correlation Coefficient:"),
+        tags$dd(textOutput("cc"))
+      ),
       helpText("Discover MLB trends throughout the years."),
       selectInput("role", 
                   label = "Choose the type of statistics to study:",
